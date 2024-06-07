@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import { BsSearch } from "react-icons/bs";
 import { SlLocationPin } from "react-icons/sl";
 import { BiCart } from "react-icons/bi";
@@ -6,13 +6,14 @@ import classes from "./Header.module.css";
 import LowerHeader from "./LowerHeader";
 import { Link } from "react-router-dom";
 import { DataContext } from "../DataProvider/DataProvider";
+import { auth } from "../../Utility/firebase";
 
 const Header = () => {
-
-  const [{basket}, dispatch] = useContext(DataContext);
-  const totalItem = basket?.reduce((amount,item)=>{
-    return item.amount + amount
-  },0)
+  const [{ user, basket }, dispatch] = useContext(DataContext);
+  const totalItem = basket?.reduce((amount, item) => {
+    return item.amount + amount;
+  }, 0);
+  
   return (
     <section className={classes.fixed}>
       <section>
@@ -43,7 +44,7 @@ const Header = () => {
               <option value="">All</option>
             </select>
             <input type="text" name="" id="" placeholder="search product" />
-            <BsSearch size={25} />
+            <BsSearch size={38} />
           </div>
           {/* right side link */}
           <div className={classes.order__container}>
@@ -57,9 +58,20 @@ const Header = () => {
               </select>
             </a>
             {/* three components */}
-            <Link to="/auth">
-              <p>Sign In</p>
-              <span>Account & Lists</span>
+            <Link to={!user && "/auth"}>
+              <div>
+                {user ? (
+                  <>
+                    <p>Hello {user?.email?.split("@")[0]}</p>
+                    <span onClick={() => auth.signOut()}>Sign Out</span>
+                  </>
+                ) : (
+                  <>
+                    <p>Hello, sign in</p>
+                    <span>Account & Lists</span>
+                  </>
+                )}
+              </div>
             </Link>
             {/* orders */}
             <Link to="/orders">
